@@ -1,0 +1,7 @@
+// COMPLETE REPLACEMENT FOR config/cursor-hooks.json
+{
+  "hooks": {
+    "post-action": "$PROJECT_ROOT/core/orchestrator/cursor-monitor.sh",
+    "error-handler": "node $PROJECT_ROOT/core/orchestrator/project-orchestrator.js"
+  }
+}

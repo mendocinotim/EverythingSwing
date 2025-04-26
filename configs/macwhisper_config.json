@@ -1,0 +1,15 @@
+{
+  "transcription": {
+    "engine": "macwhisper",
+    "params": {
+      "model_size": "large-v3",
+      "device": "mps"
+    }
+  },
+  "diarization": {
+    "engine": "sortformer",
+    "model_path": "../models/nvidia/diar_sortformer_4spk-v1",
+    "max_speakers": 4,
+    "vad_threshold": 0.85
+  }
+}

@@ -1,0 +1,112 @@
+version: '3.8'
+
+services:
+  asr-service:
+    build: .
+    command: gunicorn --bind 0.0.0.0:5000 --timeout 600 nemo_asr.app:app
+    volumes:
+      - ./raw_audio:/app/raw_audio
+      - ./processed_audio:/app/processed_audio
+      - ./models:/app/models
+      - ./configs:/app/configs
+    environment:
+      - NEMO_VERSION=1.20.0
+      - WHISPER_CONFIG_PATH=/app/configs/macwhisper_config.json
+    networks:
+      - speech-net
+    depends_on:
+      - redis
+      - model-manager
+    mem_limit: 4g
+    mem_reservation: 2g
+    cpus: 2.0
+
+  diarization-service:
+    image: python:3.9-slim
+    working_dir: /app/code/transcription
+    command: python diarize.py
+    volumes:
+      - ./code:/app/code
+      - ./processed_audio/transcribed:/app/transcribed
+      - ./models:/app/models
+    environment:
+      - SORTFORMER_CACHE=/app/models/anythingllm
+    networks:
+      - speech-net
+    depends_on:
+      - asr-service
+      - redis
+    mem_limit: 2g
+    mem_reservation: 1g
+    cpus: 1.0
+
+  summarization-service:
+    image: python:3.9-slim
+    working_dir: /app/code/generation
+    command: uvicorn lm_studio_api:app --host 0.0.0.0 --port 8000
+    volumes:
+      - ./code:/app/code
+      - ./summaries:/app/summaries
+    environment:
+      - LM_STUDIO_HOST=lm-studio
+      - LM_STUDIO_PORT=1234
+    networks:
+      - speech-net
+    depends_on:
+      - lm-studio
+    mem_limit: 2g
+    mem_reservation: 1g
+    cpus: 1.0
+
+  lm-studio:
+    image: alpinelinux/docker-lmstudio
+    ports:
+      - "1234:1234"
+    volumes:
+      - ./models/lmstudio:/models
+    environment:
+      - CORS_ENABLED=true
+      - JIT_LOADING=true
+      - JIT_UNLOADING=true
+      - JIT_TTL=1800
+    networks:
+      - speech-net
+    mem_limit: 8g
+    mem_reservation: 4g
+    cpus: 2.0
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - speech-net
+    mem_limit: 512m
+    mem_reservation: 256m
+    cpus: 0.5
+
+  model-manager:
+    build: .
+    command: python -m model_manager
+    volumes:
+      - ./models:/app/models
+      - ./logs:/app/logs
+    networks:
+      - speech-net
+    mem_limit: 1g
+    mem_reservation: 512m
+    cpus: 0.5
+
+volumes:
+  redis-data:
+  model-store:
+    driver_opts:
+      type: none
+      device: /Volumes/AI_ETS_2TB/EverythingSwing/models
+      o: bind
+
+networks:
+  speech-net:
+    driver: bridge

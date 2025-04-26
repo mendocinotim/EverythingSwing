@@ -1,0 +1,44 @@
+{
+  "stages": [
+    {
+      "name": "import",
+      "enabled": true,
+      "target_directory": "raw_audio"
+    },
+    {
+      "name": "transcribe",
+      "enabled": true,
+      "tool": "macwhisper",
+      "config": "macwhisper_config.json",
+      "output_directory": "transcriptions/raw"
+    },
+    {
+      "name": "clean_transcription",
+      "enabled": true,
+      "filter": "CleanTranscription.sh",
+      "output_directory": "transcriptions/edited"
+    },
+    {
+      "name": "summarize",
+      "enabled": false,
+      "tool": "llm",
+      "output_directory": "summaries"
+    },
+    {
+      "name": "process_audio",
+      "enabled": false,
+      "tool": "sortformer",
+      "output_directory": "processed_audio/cleaned"
+    },
+    {
+      "name": "export_podcast",
+      "enabled": false,
+      "output_directory": "processed_audio/podcast_ready"
+    }
+  ],
+  "error_handling": {
+    "pause_on_error": true,
+    "log_directory": "logs",
+    "notification_email": ""
+  }
+}

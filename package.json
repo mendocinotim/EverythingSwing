@@ -1,0 +1,15 @@
+{
+  "name": "everythingswing",
+  "version": "1.0.0",
+  "description": "A project for Everything Swing",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "perplexity": "^1.0.1"
+  }
+}
