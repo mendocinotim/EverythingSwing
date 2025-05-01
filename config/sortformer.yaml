@@ -1,0 +1,24 @@
+model:
+  diarizer:
+    manifest_filepath: null
+    out_dir: diarized
+    oracle_vad: false
+    max_num_speakers: 4
+    threshold: 0.85
+
+vad:
+  window_length_in_sec: 0.15
+  shift_length_in_sec: 0.075
+  threshold: 0.6
+
+clustering:
+  method: "sortformer"
+  parameters:
+    num_iterations: 200
+    batch_size: 16
+    learning_rate: 0.0005
+
+hardware:
+  device: "mps"
+  precision: "16-mixed"
+  cache_dir: "/tmp/nemo_cache"

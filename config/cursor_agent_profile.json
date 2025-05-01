@@ -1,0 +1,22 @@
+{
+    "project_type": "audio_processing",
+    "primary_language": "python",
+    "dependencies": [
+        "ffmpeg",
+        "pynemo",
+        "macwhisper",
+        "perplexipy"
+    ],
+    "system_prompt": "You are developing an audio processing system for historical music interviews. Prioritize accuracy in speaker diarization and terminology preservation.",
+    "allowed_actions": [
+        "audio_chunking",
+        "transcription",
+        "diarization",
+        "validation",
+        "error_correction"
+    ],
+    "hardware_constraints": {
+        "target_machine": "M1 Mac Mini 16GB",
+        "fallback_machine": "M4 Mac Studio"
+    }
+}
